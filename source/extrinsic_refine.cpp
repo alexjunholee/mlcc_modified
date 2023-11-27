@@ -85,8 +85,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "extrinsic_refine");
   ros::NodeHandle nh("~");
 
-  ros::Publisher pub_surf = nh.advertise<sensor_msgs::PointCloud2>("/map_surf", 100);
-  ros::Publisher pub_surf2 = nh.advertise<sensor_msgs::PointCloud2>("/map_surf2", 100);
+  ros::Publisher pub_surf = nh.advertise<sensor_msgs::PointCloud2>("/source_refined", 100);
+  ros::Publisher pub_surf2 = nh.advertise<sensor_msgs::PointCloud2>("/target_refined", 100);
   ros::Publisher pub_surf_debug = nh.advertise<sensor_msgs::PointCloud2>("/debug_surf", 100);
 
   string data_path, log_path;
@@ -106,6 +106,7 @@ int main(int argc, char** argv)
   sensor_msgs::PointCloud2 debugMsg, colorCloudMsg;
   vector<mypcl::pose> pose_vec = mypcl::read_pose(data_path + "pose.json");
   vector<mypcl::pose> ref_vec = mypcl::read_pose(data_path + "ref.json");
+  cout<< "read pose.json of size: " << pose_vec.size() << endl;
   size_t ref_size = ref_vec.size();
   size_t pose_size = pose_vec.size();
   
@@ -174,24 +175,24 @@ int main(int argc, char** argv)
     cout << "time cost " << (t_end-t_begin).toSec() << endl;
     avg_time += (t_end-t_begin).toSec();
 
-    pc_color->clear();
-    Eigen::Quaterniond q0(pose_vec[0].q.w(), pose_vec[0].q.x(), pose_vec[0].q.y(), pose_vec[0].q.z());
-    Eigen::Vector3d t0(pose_vec[0].t(0), pose_vec[0].t(1), pose_vec[0].t(2));
-    for(size_t i = 0; i < pose_size; i++)
-    {
-      mypcl::transform_pointcloud(*base_pc[i], *pc_debug, q0.inverse()*(pose_vec[i].t-t0), q0.inverse()*pose_vec[i].q);
-      pc_color = mypcl::append_cloud(pc_color, *pc_debug);
+    // pc_color->clear();
+    // Eigen::Quaterniond q0(pose_vec[0].q.w(), pose_vec[0].q.x(), pose_vec[0].q.y(), pose_vec[0].q.z());
+    // Eigen::Vector3d t0(pose_vec[0].t(0), pose_vec[0].t(1), pose_vec[0].t(2));
+    // for(size_t i = 0; i < pose_size; i++)
+    // {
+    //   mypcl::transform_pointcloud(*base_pc[i], *pc_debug, q0.inverse()*(pose_vec[i].t-t0), q0.inverse()*pose_vec[i].q);
+    //   pc_color = mypcl::append_cloud(pc_color, *pc_debug);
       
-      mypcl::transform_pointcloud(*ref_pc[i], *pc_debug,
-        q0.inverse()*(pose_vec[i].t-t0)+q0.inverse()*pose_vec[i].q*ref_vec[0].t,
-        q0.inverse()*pose_vec[i].q*ref_vec[0].q);
-      pc_color = mypcl::append_cloud(pc_color, *pc_debug);
-    }
+    //   mypcl::transform_pointcloud(*ref_pc[i], *pc_debug,
+    //     q0.inverse()*(pose_vec[i].t-t0)+q0.inverse()*pose_vec[i].q*ref_vec[0].t,
+    //     q0.inverse()*pose_vec[i].q*ref_vec[0].q);
+    //   pc_color = mypcl::append_cloud(pc_color, *pc_debug);
+    // }
 
-    pcl::toROSMsg(*pc_color, debugMsg);
-    debugMsg.header.frame_id = "camera_init";
-    debugMsg.header.stamp = cur_t;
-    pub_surf_debug.publish(debugMsg);
+    // pcl::toROSMsg(*pc_color, debugMsg);
+    // debugMsg.header.frame_id = "camera_init";
+    // debugMsg.header.stamp = cur_t;
+    // pub_surf_debug.publish(debugMsg);
   }
   
   cout << "---------------------" << endl;
@@ -206,7 +207,7 @@ int main(int argc, char** argv)
     pcl::io::loadPCDFile(data_path+to_string(base_lidar)+"/"+to_string(i)+".pcd", *pc_surf);
     mypcl::transform_pointcloud(*pc_surf, *pc_surf, q0.inverse()*(pose_vec[i].t-t0), q0.inverse()*pose_vec[i].q);
     pcl::toROSMsg(*pc_surf, colorCloudMsg);
-    colorCloudMsg.header.frame_id = "camera_init";
+    colorCloudMsg.header.frame_id = "lidar";
     colorCloudMsg.header.stamp = cur_t;
     pub_surf.publish(colorCloudMsg);
     
@@ -215,12 +216,12 @@ int main(int argc, char** argv)
       q0.inverse()*(pose_vec[i].t-t0)+q0.inverse()*pose_vec[i].q*ref_vec[0].t,
       q0.inverse()*pose_vec[i].q*ref_vec[0].q);
     pcl::toROSMsg(*pc_surf, colorCloudMsg);
-    colorCloudMsg.header.frame_id = "camera_init";
+    colorCloudMsg.header.frame_id = "lidar";
     colorCloudMsg.header.stamp = cur_t;
     pub_surf2.publish(colorCloudMsg);
   }
 
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(100);
   while(ros::ok())
   {
     ros::spinOnce();

@@ -67,8 +67,8 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "pose_refine");
   ros::NodeHandle nh("~");
 
-  ros::Publisher pub_surf = nh.advertise<sensor_msgs::PointCloud2>("/map_surf", 100);
-  ros::Publisher pub_surf_debug = nh.advertise<sensor_msgs::PointCloud2>("/debug_surf", 100);
+  ros::Publisher pub_surf = nh.advertise<sensor_msgs::PointCloud2>("/source_refined", 100);
+  ros::Publisher pub_surf_debug = nh.advertise<sensor_msgs::PointCloud2>("/target_refined", 100);
 
   string data_path;
   int max_iter, base_lidar;
@@ -154,7 +154,7 @@ int main(int argc, char** argv)
       pc_full = mypcl::append_cloud(pc_full, *pc_debug);
     }
     pcl::toROSMsg(*pc_full, debugMsg);
-    debugMsg.header.frame_id = "camera_init";
+    debugMsg.header.frame_id = "lidar";
     debugMsg.header.stamp = cur_t;
     pub_surf_debug.publish(debugMsg);
   }
@@ -172,7 +172,7 @@ int main(int argc, char** argv)
     mypcl::transform_pointcloud(*pc_surf, *pc_surf, q0.inverse()*(pose_vec[i].t-t0), q0.inverse()*pose_vec[i].q);
 
     pcl::toROSMsg(*pc_surf, colorCloudMsg);
-    colorCloudMsg.header.frame_id = "camera_init";
+    colorCloudMsg.header.frame_id = "lidar";
     colorCloudMsg.header.stamp = cur_t;
     pub_surf.publish(colorCloudMsg);
   }

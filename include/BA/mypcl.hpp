@@ -39,9 +39,8 @@ namespace mypcl
     file.open(path);
     double tx, ty, tz, w, x, y, z;
     int cnt = 0;
-    while(!file.eof())
+    while(file >> tx >> ty >> tz >> x >> y >> z >> w)
     {
-      file >> tx >> ty >> tz >> w >> x >> y >> z;
       pose_vec.emplace_back(pose(Eigen::Quaterniond(w, x, y, z),
                             Eigen::Vector3d(tx, ty, tz)));
       cnt++;
@@ -115,10 +114,10 @@ namespace mypcl
       q = q0.inverse()*pose_vec[i].q;
       if(i == pose_vec.size()-1)
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z();
+             << q.x() << " "<< q.y() << " "<< q.z() << " " << q.w();
       else
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z() << "\n";
+             << q.x() << " "<< q.y() << " "<< q.z() << " "<< q.w() << "\n";
     }
     file.close();
   }
@@ -133,10 +132,10 @@ namespace mypcl
       Eigen::Vector3d t = ref_vec[i].t;
       if(i == ref_vec.size()-1)
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z();
+             << q.x() << " "<< q.y() << " "<< q.z() << " " << q.w();
       else
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z() << "\n";
+             << q.x() << " "<< q.y() << " "<< q.z() << " "<< q.w() << "\n";
     }
     file.close();
   }
@@ -156,10 +155,10 @@ namespace mypcl
       q = q0.inverse()*pose_vec[i].q;
       if(i == pose_vec.size()-1)
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z();
+             << q.x() << " "<< q.y() << " "<< q.z() << " " << q.w();
       else
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z() << "\n";
+             << q.x() << " "<< q.y() << " "<< q.z() << " "<< q.w() << "\n";
     }
     file.close();
 
@@ -170,10 +169,10 @@ namespace mypcl
       Eigen::Vector3d t = ref_vec[i].t;
       if(i == ref_vec.size()-1)
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z();
+             << q.x() << " "<< q.y() << " "<< q.z() << " " << q.w();
       else
         file << t(0) << " " << t(1) << " " << t(2) << " "
-             << q.w() << " "<< q.x() << " "<< q.y() << " "<< q.z() << "\n";
+             << q.x() << " "<< q.y() << " "<< q.z() << " "<< q.w() << "\n";
     }
     file.close();
   }

@@ -171,18 +171,19 @@ public:
 				divide_thread(poses, ts, refQs, refTs, Hess, JacT, residual1);
 
 			D = Hess.diagonal().asDiagonal();
-			Hess2 = Hess + u * D;
+			// Hess2 = Hess + u * D;
 
-			for(int j = 0; j < jacob_len; j++)
-			{
-				matB.at<double>(j, 0) = -JacT(j, 0);
-				for(int f = 0; f < jacob_len; f++)
-					matA.at<double>(j, f) = Hess2(j, f);
-			}
-			cv::solve(matA, matB, matX, cv::DECOMP_QR);
+			// for(int j = 0; j < jacob_len; j++)
+			// {
+			// 	matB.at<double>(j, 0) = -JacT(j, 0);
+			// 	for(int f = 0; f < jacob_len; f++)
+			// 		matA.at<double>(j, f) = Hess2(j, f);
+			// }
+			// cv::solve(matA, matB, matX, cv::DECOMP_QR);
 
-			for(int j = 0; j < jacob_len; j++)
-				dxi(j, 0) = matX.at<double>(j, 0);
+			// for(int j = 0; j < jacob_len; j++)
+			// 	dxi(j, 0) = matX.at<double>(j, 0);
+            dxi = (Hess + u * D).ldlt().solve(-JacT);
 
 			for(int i = 0; i < pose_size; i++)
 			{

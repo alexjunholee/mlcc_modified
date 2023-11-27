@@ -1,3 +1,12 @@
+# What is the difference from the original repository?
+
+Instead of the vulnerable ```cv::solve(matA, matB, matX, cv::DECOMP_QR)``` for low-overlap cases,
+we chose Eigen ldlt solve ```dxi = Hess2.ldlt().solve(-JacT)```.
+
+Also, to avoid the confusion between eigen and tum rotation formats, we used ```tx ty tz qx qy qz qw``` (TUM) format for poses.
+
+That's it!
+
 # Targetless Extrinsic Calibration of Multiple Small FoV LiDARs and Cameras using Adaptive Voxelization
 
 Our journal paper is available on [IEEE TIM](https://ieeexplore.ieee.org/document/9779777). The pre-release code has been updated. Our experiment video is availalbe on [YouTube](https://youtu.be/PaiYgAXl9iY) and [Bilibili](https://www.bilibili.com/video/BV1p64y1h7ae?spm_id_from=333.999.0.0). Please consider citing our paper if you find our code is useful.
